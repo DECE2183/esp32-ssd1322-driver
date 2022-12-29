@@ -182,7 +182,6 @@ static void ssd1322_init_sequence(ssd1322_t *disp)
 ssd1322_t *ssd1322_init(spi_host_device_t spi_host, ssd1322_pinmap_t pinmap, uint16_t res_x, uint16_t res_y)
 {
     ssd1322_t *disp = malloc(sizeof(ssd1322_t));
-    printf("11\r\n");
     if (disp == NULL)
         return NULL;
 
@@ -222,6 +221,7 @@ ssd1322_t *ssd1322_init(spi_host_device_t spi_host, ssd1322_pinmap_t pinmap, uin
     ssd1322_set_contrast(disp, 128);
     ssd1322_set_brightness(disp, 15);
     ssd1322_fill(disp, 0);
+    ssd1322_send_framebuffer(disp);
     ssd1322_mode_normal(disp);
 
     return disp;
@@ -304,7 +304,6 @@ void ssd1322_fill(ssd1322_t *disp, uint8_t color)
 {
     uint8_t pixels = (color << 4) | (color & 0x0F);
     memset(disp->framebuffer, pixels, disp->framebuffer_size);
-    ssd1322_send_framebuffer(disp);
 }
 
 void ssd1322_set_pixel(ssd1322_t *disp, int x, int y, int color)
@@ -329,5 +328,48 @@ void ssd1322_draw_vline(ssd1322_t *disp, int y1, int y2, int x, int color)
     for (int y = y1; y < y2; ++y)
     {
         ssd1322_set_pixel(disp, x, y, color);
+    }
+}
+
+void ssd1322_draw_bitmap_4bit(ssd1322_t *disp, int x, int y, const void *bitmap, int x_size, int y_size)
+{
+    uint16_t bitmap_pos = 0;
+    uint16_t processed_pixels = 0;
+    uint8_t pixel_parity = 0;
+    uint8_t *bmp = (uint8_t *)bitmap;
+
+    for (uint16_t i = y; i < y + y_size; i++)
+    {
+        for (uint16_t j = x; j < x + x_size; j++)
+        {
+            pixel_parity = processed_pixels % 2;
+
+            if (pixel_parity == 0)
+            {
+                ssd1322_set_pixel(disp, j, i, bmp[bitmap_pos] >> 4);
+                ++processed_pixels;
+            }
+            else
+            {
+                ssd1322_set_pixel(disp, j, i, bmp[bitmap_pos]);
+                ++processed_pixels;
+                ++bitmap_pos;
+            }
+        }
+    }
+}
+
+void ssd1322_draw_bitmap_8bit(ssd1322_t *disp, int x, int y, const void *bitmap, int x_size, int y_size)
+{
+    uint16_t bitmap_pos = 0;
+    uint8_t *bmp = (uint8_t *)bitmap;
+
+    for (uint16_t i = y; i < y + y_size; i++)
+    {
+        for (uint16_t j = x; j < x + x_size; j++)
+        {
+            ssd1322_set_pixel(disp, j, i, bmp[bitmap_pos] >> 4);
+            ++bitmap_pos;
+        }
     }
 }

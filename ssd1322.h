@@ -46,3 +46,5 @@ void ssd1322_fill(ssd1322_t *disp, uint8_t color);
 void ssd1322_set_pixel(ssd1322_t *disp, int x, int y, int color);
 void ssd1322_draw_hline(ssd1322_t *disp, int x1, int x2, int y, int color);
 void ssd1322_draw_vline(ssd1322_t *disp, int y1, int y2, int x, int color);
+void ssd1322_draw_bitmap_4bit(ssd1322_t *disp, int x, int y, const void *bitmap, int x_size, int y_size);
+void ssd1322_draw_bitmap_8bit(ssd1322_t *disp, int x, int y, const void *bitmap, int x_size, int y_size);
