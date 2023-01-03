@@ -308,6 +308,8 @@ void ssd1322_fill(ssd1322_t *disp, uint8_t color)
 
 void ssd1322_set_pixel(ssd1322_t *disp, int x, int y, int color)
 {
+    if (x < 0 || y < 0 || x >= disp->res_x || y >= disp->res_y) return;
+
     int idx = (x >> 1) + y * disp->rows_cnt;
     int offset = (!(x % 2)) << 2;
 
