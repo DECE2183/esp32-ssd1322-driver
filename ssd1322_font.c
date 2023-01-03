@@ -11,7 +11,7 @@ void ssd1322_draw_string(ssd1322_t *disp, int x, int y, const char *str, const v
 {
     ssd1322_font_t *f = (ssd1322_font_t *)font;
 
-    while (*str != '\0' && x < disp->res_x)
+    while (*str != '\0' && *str != '\n' && x < disp->res_x)
     {
         ssd1322_draw_char(disp, x, y, *str, font);
         x += f->chars[(unsigned char)*str].w;
