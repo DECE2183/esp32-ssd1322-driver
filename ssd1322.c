@@ -331,6 +331,22 @@ void ssd1322_draw_vline(ssd1322_t *disp, int y1, int y2, int x, int color)
     }
 }
 
+void ssd1322_draw_rect(ssd1322_t *disp, int x, int y, int width, int height, int color)
+{
+    ssd1322_draw_hline(disp, x, x + width, y, color);
+    ssd1322_draw_hline(disp, x, x + width, y + height - 1, color);
+    ssd1322_draw_vline(disp, y + 1, y + height - 1, x, color);
+    ssd1322_draw_vline(disp, y + 1, y + height - 1, x + width - 1, color);
+}
+
+void ssd1322_draw_rect_filled(ssd1322_t *disp, int x, int y, int width, int height, int color)
+{
+    for (int i = x; i < x + width; ++i)
+    {
+        ssd1322_draw_vline(disp, y, y + height, i, color);
+    }
+}
+
 void ssd1322_draw_bitmap_4bit(ssd1322_t *disp, int x, int y, const void *bitmap, int x_size, int y_size)
 {
     uint16_t bitmap_pos = 0;
